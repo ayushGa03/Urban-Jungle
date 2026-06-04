@@ -8,13 +8,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // LOAD USER ON MOUNT
+  // LOAD USER ON MOUNT - ONLY ONCE
   useEffect(() => {
-    if (token) {
+    if (token && !isInitialized) {
       fetchUser();
+    } else if (!token) {
+      setIsInitialized(true);
     }
-  }, [token]);
+  }, []);
 
   const fetchUser = async () => {
     try {
@@ -24,6 +27,9 @@ export const AuthProvider = ({ children }) => {
       console.log("Error fetching user:", error);
       localStorage.removeItem("token");
       setToken(null);
+      setUser(null);
+    } finally {
+      setIsInitialized(true);
     }
   };
 
@@ -36,9 +42,14 @@ export const AuthProvider = ({ children }) => {
       formData.append("password", password);
 
       const res = await authAPI.register(formData);
-      setToken(res.data.token);
+      
+      // Store token in localStorage first
       localStorage.setItem("token", res.data.token);
+      
+      // Then set state
+      setToken(res.data.token);
       setUser(res.data.user);
+      
       toast.success("Registered successfully!");
       return res.data;
     } catch (error) {
@@ -53,9 +64,14 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await authAPI.login(email, password);
-      setToken(res.data.token);
+      
+      // Store token in localStorage first
       localStorage.setItem("token", res.data.token);
+      
+      // Then set state
+      setToken(res.data.token);
       setUser(res.data.user);
+      
       toast.success("Logged in successfully!");
       return res.data;
     } catch (error) {
@@ -76,9 +92,14 @@ export const AuthProvider = ({ children }) => {
       formData.append("adminSecretKey", adminSecretKey);
 
       const res = await authAPI.adminRegister(formData);
-      setToken(res.data.token);
+      
+      // Store token in localStorage first
       localStorage.setItem("token", res.data.token);
+      
+      // Then set state
+      setToken(res.data.token);
       setUser(res.data.user);
+      
       toast.success("Admin registered successfully!");
       return res.data;
     } catch (error) {
@@ -93,9 +114,14 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await authAPI.adminLogin(email, password);
-      setToken(res.data.token);
+      
+      // Store token in localStorage first
       localStorage.setItem("token", res.data.token);
+      
+      // Then set state
+      setToken(res.data.token);
       setUser(res.data.user);
+      
       toast.success("Admin logged in successfully!");
       return res.data;
     } catch (error) {
