@@ -326,7 +326,7 @@ This project is licensed under the ISC License - see the LICENSE file for detail
 
 ## 👥 Authors
 
-- **Your Name** - Initial work
+- **Your Name** - Ayush Gaurav, Arpit Sahu
 
 ---
 
